@@ -22,28 +22,31 @@ app.post('/register-token', (req, res) => {
 });
 
 // Funzione per inviare notifiche push
-const sendPushNotification = async (token, message) => {
+const sendPushNotification = async (token, notificationData) => {
+    const message = {
+        to: token,
+        sound: 'default',
+        title: 'Notifica Automatica',
+        body: 'Questa è una notifica inviata ogni 3 ore!',
+        data: notificationData.data,
+    };
+
     try {
         const response = await fetch('https://exp.host/--/api/v2/push/send', {
             method: 'POST',
             headers: {
+                'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-                to: token,
-                sound: 'default',
-                title: message.title,
-                body: message.body,
-                data: message.data,
-            }),
+            body: JSON.stringify(message),
         });
-
-        const responseData = await response.json();
-        console.log('Notifica inviata:', responseData);
+        const data = await response.json();
+        console.log('Risultato notifica:', data);
     } catch (error) {
         console.error('Errore durante l\'invio della notifica:', error);
     }
 };
+
 
 cron.schedule('*/1 * * * *', () => {
 // Pianifica notifiche cicliche ogni 3 ore
@@ -51,9 +54,12 @@ cron.schedule('*/1 * * * *', () => {
     console.log('Invio notifiche cicliche...');
     tokens.forEach((token) => {
         sendPushNotification(token, {
-            title: 'Promemoria!',
-            body: 'Ehi, sono passate 3 ore! Controlla la tua app.',
-            data: { info: 'Dati opzionali' },
+            title: 'Heyyy è ora di muoversi!!!',
+            body: 'Fai attività leggera',
+            data: {
+                screen: 'Exercise',
+                info: 'Dati opzionali'
+            },
         });
     });
 });
