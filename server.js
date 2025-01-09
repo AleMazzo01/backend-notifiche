@@ -6,13 +6,13 @@ import cron from 'node-cron';
 const app = (await express)();
 const PORT = 3000;
 
-// Middleware
+//middleware
 app.use(bodyParser.json());
 
-// Variabile temporanea per salvare i token
+
 let tokens = [];
 
-// Endpoint per registrare i token
+//endpoint per registrare i token
 app.post('/register-token', (req, res) => {
     const { token } = req.body;
     if (!token) return res.status(400).send('Token mancante!');
@@ -21,13 +21,13 @@ app.post('/register-token', (req, res) => {
     res.send('Token registrato con successo!');
 });
 
-// Funzione per inviare notifiche push
+// funzione per inviare notifiche push
 const sendPushNotification = async (token, notificationData) => {
     const message = {
         to: token,
         sound: 'default',
-        title: 'Notifica Automatica',
-        body: 'Questa è una notifica inviata ogni 3 ore!',
+        title: 'Heyyy è ora di muoversi!!!',
+        body: 'Fai attività leggera',
         data: notificationData.data,
     };
 
@@ -49,7 +49,7 @@ const sendPushNotification = async (token, notificationData) => {
 
 
 cron.schedule('*/1 * * * *', () => {
-// Pianifica notifiche cicliche ogni 3 ore
+//pianifica notifiche cicliche ogni 3 ore
 //cron.schedule('0 */3 * * *', () => {
     console.log('Invio notifiche cicliche...');
     tokens.forEach((token) => {
@@ -64,7 +64,7 @@ cron.schedule('*/1 * * * *', () => {
     });
 });
 
-// Avvia il server
+//avvia il server
 app.listen(PORT, () => {
     console.log(`Server in ascolto su http://localhost:${PORT}`);
 });
