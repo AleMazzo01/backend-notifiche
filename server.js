@@ -21,7 +21,7 @@ app.post('/register-token', (req, res) => {
     res.send('Token registrato con successo!');
 });
 
-// funzione per inviare notifiche push
+//unzione per inviare notifiche push
 const sendPushNotification = async (token, notificationData) => {
     const message = {
         to: token,
@@ -48,9 +48,10 @@ const sendPushNotification = async (token, notificationData) => {
 };
 
 
-cron.schedule('*/1 * * * *', () => {
+//cron.schedule('*/1 * * * *', () => {
 //pianifica notifiche cicliche ogni 3 ore
-//cron.schedule('0 */3 * * *', () => {
+cron.schedule('0 7-22/3 * * *', () => {
+
     console.log('Invio notifiche cicliche...');
     tokens.forEach((token) => {
         sendPushNotification(token, {
