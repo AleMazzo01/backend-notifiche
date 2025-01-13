@@ -15,26 +15,21 @@ let tokens = [];
 //endpoint per registrare i token
 app.post('/register-token', (req, res) => {
     const { token } = req.body;
-    if (!token || !/^ExponentPushToken\[\w+\]$/.test(token)) {
-        return res.status(400).send('Token non valido!');
-    }
-    if (!tokens.includes(token)) {
-        tokens.push(token); // Evita duplicati
-        console.log('Token registrato:', token);
-        res.send('Token registrato con successo!');
-    } else {
-        res.send('Token già registrato!');
-    }
+    if (!token) return res.status(400).send('Token mancante!');
+    if (!tokens.includes(token)) tokens.push(token); // Evita duplicati
+    console.log('Token registrato:', token);
+    res.send('Token registrato con successo!');
 });
 
+
 //unzione per inviare notifiche push
-const sendPushNotification = async (token, notificationData) => {
+const sendPushNotification = async (token) => {
     const message = {
         to: token,
         sound: 'default',
-        title: notificationData.title || 'Titolo predefinito',
-        body: notificationData.body || 'Corpo predefinito',
-        data: notificationData.data || {},
+        title: 'Notifica Automatica',
+        body: 'Questa è una notifica inviata ogni 3 ore!',
+        data: { customData: 'qualcosa' },
     };
 
     try {
@@ -46,19 +41,14 @@ const sendPushNotification = async (token, notificationData) => {
             },
             body: JSON.stringify(message),
         });
-
         const data = await response.json();
-        console.log('Risultato invio notifica:', data);
-
-        // Rimuovi token non validi
-        if (data.errors) {
-            console.error(`Errore con il token ${token}:`, data.errors);
-            tokens = tokens.filter(t => t !== token);
-        }
+        console.log('Risultato notifica:', data);
     } catch (error) {
-        console.error(`Errore di rete durante l'invio della notifica al token ${token}:`, error);
+        console.error('Errore durante l\'invio della notifica:', error);
     }
 };
+
+
 
 cron.schedule('*/1 * * * *', () => {
     console.log('Invio notifiche cicliche...');
