@@ -15,10 +15,16 @@ let tokens = [];
 //endpoint per registrare i token
 app.post('/register-token', (req, res) => {
     const { token } = req.body;
-    if (!token) return res.status(400).send('Token mancante!');
-    if (!tokens.includes(token)) tokens.push(token); // Evita duplicati
-    console.log('Token registrato:', token);
-    res.send('Token registrato con successo!');
+    if (!token || !/^ExponentPushToken\[\w+\]$/.test(token)) {
+        return res.status(400).send('Token non valido!');
+    }
+    if (!tokens.includes(token)) {
+        tokens.push(token); // Evita duplicati
+        console.log('Token registrato:', token);
+        res.send('Token registrato con successo!');
+    } else {
+        res.send('Token già registrato!');
+    }
 });
 
 //unzione per inviare notifiche push
@@ -26,9 +32,9 @@ const sendPushNotification = async (token, notificationData) => {
     const message = {
         to: token,
         sound: 'default',
-        title: 'Heyyy è ora di muoversi!!!',
-        body: 'Fai attività leggera',
-        data: notificationData.data,
+        title: notificationData.title || 'Titolo predefinito',
+        body: notificationData.body || 'Corpo predefinito',
+        data: notificationData.data || {},
     };
 
     try {
@@ -40,26 +46,30 @@ const sendPushNotification = async (token, notificationData) => {
             },
             body: JSON.stringify(message),
         });
+
         const data = await response.json();
-        console.log('Risultato notifica:', data);
+        console.log('Risultato invio notifica:', data);
+
+        // Rimuovi token non validi
+        if (data.errors) {
+            console.error(`Errore con il token ${token}:`, data.errors);
+            tokens = tokens.filter(t => t !== token);
+        }
     } catch (error) {
-        console.error('Errore durante l\'invio della notifica:', error);
+        console.error(`Errore di rete durante l'invio della notifica al token ${token}:`, error);
     }
 };
 
-
 cron.schedule('*/1 * * * *', () => {
-//pianifica notifiche cicliche ogni 3 ore
-//cron.schedule('0 7-22/3 * * *', () => {
-
     console.log('Invio notifiche cicliche...');
     tokens.forEach((token) => {
+        console.log(`Invio notifica al token: ${token}`);
         sendPushNotification(token, {
             title: 'Heyyy è ora di muoversi!!!',
             body: 'Fai attività leggera',
             data: {
                 screen: 'Exercise',
-                info: 'Dati opzionali'
+                info: 'Dati opzionali',
             },
         });
     });
