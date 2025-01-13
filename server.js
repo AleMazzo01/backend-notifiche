@@ -50,7 +50,7 @@ const sendPushNotification = async (token) => {
 
 
 
-cron.schedule('*/1 * * * *', () => {
+cron.schedule('*/2 * * * *', () => {
     console.log('Invio notifiche cicliche...');
     console.log('Token registrati:', tokens); // Aggiungi questo log
 
