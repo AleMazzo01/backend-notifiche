@@ -48,9 +48,9 @@ const sendPushNotification = async (token, notificationData) => {
 };
 
 
-//cron.schedule('*/1 * * * *', () => {
+cron.schedule('*/1 * * * *', () => {
 //pianifica notifiche cicliche ogni 3 ore
-cron.schedule('*/30 7-22 * * *', () => {
+//cron.schedule('0 7-22/3 * * *', () => {
 
     console.log('Invio notifiche cicliche...');
     tokens.forEach((token) => {
