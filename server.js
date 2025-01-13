@@ -62,6 +62,8 @@ const sendPushNotification = async (token, notificationData) => {
 
 cron.schedule('*/1 * * * *', () => {
     console.log('Invio notifiche cicliche...');
+    console.log('Token registrati:', tokens); // Aggiungi questo log
+
     tokens.forEach((token) => {
         console.log(`Invio notifica al token: ${token}`);
         sendPushNotification(token, {
