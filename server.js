@@ -27,8 +27,8 @@ const sendPushNotification = async (token) => {
     const message = {
         to: token,
         sound: 'default',
-        title: 'Notifica Automatica',
-        body: 'Questa è una notifica inviata ogni 3 ore!',
+        title: 'Heyyy è ora di muoversi!!!',
+        body: 'Fai attività leggera',
         data: { customData: 'qualcosa' },
     };
 
